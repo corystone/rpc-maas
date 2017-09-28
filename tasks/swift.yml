@@ -13,6 +13,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+- name: Print if swift is defined
+  debug:
+    msg: SWIFT IS DEFINED
+  when: swift is defined
+
+- name: Print if storage_network is defined
+  debug:
+    msg: SWIFT STORAGE NETWORK IS DEFINED
+  when: swift.storage_network is defined
+
 - name: Set Storage address fact for host
   set_fact:
     storage_bridge: "{{ 'ansible_' + swift.storage_network|replace('-', '_') }}"
@@ -21,12 +31,14 @@
     - swift.storage_network is defined
     - inventory_hostname in groups['swift_hosts']
 
+- name: Print hostvars
+  debug: var=hostvars[inventory_hostname]
+
 - name: Set Storage_address fact for host
   set_fact:
     storage_address: "{{ hostvars[inventory_hostname][storage_bridge]['ipv4']['address'] | default(container_address) }}"
   when:
     - inventory_hostname in groups['swift_hosts']
-
 
 # Setup Swift Server healthchecks
 - include: ensure_local_checks.yml
@@ -38,4 +50,5 @@
   vars:
     checks: "{{ swift_recon_checks_list }}"
   when:
-    - inventory_hostname in groups['swift_proxy'][0-1]
+    - inventory_hostname in groups['swift_proxy']
+#    - inventory_hostname in groups['swift_proxy'][0-1]

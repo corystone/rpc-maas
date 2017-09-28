@@ -40,11 +40,15 @@
   shell: "ls -1 {{ maas_plugin_dir }}*.py"
   register: plugin_files
 
+- name: Print plugin_files
+  debug: var={{ item }}
+  with_items: plugin_files.stdout_lines
+
 - name: Chmod listed plugin files
   file:
     path: "{{ item }}"
     mode: "0755"
-  with_items: plugin_files.stdout_lines
+  with_items: "{{ plugin_files.stdout_lines }}"
 
 - name: Create openrc file
   template:
