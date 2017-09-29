@@ -31,9 +31,6 @@
     - swift.storage_network is defined
     - inventory_hostname in groups['swift_hosts']
 
-- name: Print hostvars
-  debug: var=hostvars[inventory_hostname]
-
 - name: Set Storage_address fact for host
   set_fact:
     storage_address: "{{ hostvars[inventory_hostname][storage_bridge]['ipv4']['address'] | default(container_address) }}"
@@ -50,5 +47,4 @@
   vars:
     checks: "{{ swift_recon_checks_list }}"
   when:
-    - inventory_hostname in groups['swift_proxy']
-#    - inventory_hostname in groups['swift_proxy'][0-1]
+    - inventory_hostname in groups['swift_proxy'][0-1]
